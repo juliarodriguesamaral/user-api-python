@@ -21,10 +21,14 @@ class Users(db.Model):
         self.name = name
         self.email = email
 
-"""Definindo o Schema do MArshmallow para facilitar a utilização de JSON"""
+
+"""Definindo o Schema do Marshmallow para facilitar a utilização de JSON"""
+
+
 class UsersSchema(ma.Schema):
     class Meta:
         fields = ('id', 'username', 'name', 'email', 'password', 'created_on')
 
+
 user_schema = UsersSchema()
-user_schema = UsersSchema( many=True)
+users_schema = UsersSchema(many=True)
