@@ -19,3 +19,62 @@ def post_user():
         return jsonify({'message': 'successfully registered', 'data': result.data}), 201
     except:
         return jsonify({'message': 'unable to create', 'data': {}}), 500
+
+
+def update_user(id):
+    username = request.json['username']
+    password = request.json['password']
+    name = request.json['name']
+    email = request.json['email']
+
+    user = Users.query.get(id)
+
+    if not user:
+        return jsonify({'message': "user don't exist", 'data': {}}), 404
+
+    pass_hash = generate_password_hash(password)
+
+    try:
+        user.username = username
+        user.password = pass_hash
+        user.name = name
+        user.email = email
+        db.session.commit()
+        result = user_schema.dump(user)
+        return jsonify({'message': 'successfully updated', 'data': result.data}), 201
+    except:
+        return jsonify({'message': 'unable to update', 'data': {}}), 500
+
+
+def get_users():
+
+    users = Users.query.all()
+    if users:
+        result = users_schema.dump(users)
+        return jsonify({'message': 'successfully fetched', 'data': result.data})
+
+    return jsonify({'message': 'nothing found', 'data': {}})
+
+
+def get_user(id):
+    user = Users.query.get(id)
+    if user:
+        result = users_schema.dump(user)
+        return jsonify({'message': 'successfully fetched', 'data': result.data}), 200
+
+    return jsonify({'message': "user don't exist", 'data': {}}), 404
+
+
+def delete_user(id):
+    user = Users.query.get(id)
+    if not user:
+        return jsonify({'message': "user don't exist", 'data': {}}), 404
+
+    if user:
+        try:
+            db.session.delete(user)
+            db.session.commit()
+            result = users_schema.dump(user)
+            return jsonify({'message': 'successfully deleted', 'data': result.data}), 200
+        except:
+            return jsonify({'message': 'unable to delete', 'data': {}}), 500
